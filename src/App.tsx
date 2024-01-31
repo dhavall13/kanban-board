@@ -1,8 +1,11 @@
-function App() {
+import { AppContainer } from './styles'
+import { Column } from './Column'
+
+export const App = () => {
   return (
-    <>
-      <h1>Hello World</h1>
-    </>
+    <AppContainer>
+      <Column text="Todo:" />
+    </AppContainer>
   )
 }
 

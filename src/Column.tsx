@@ -1,13 +1,13 @@
-import { AddNewItem } from './AddNewItem'
-import { Card } from './Card'
-import { useAppState } from './state/AppStateContext'
-import { moveList, addTask } from './state/action'
 import { ColumnContainer, ColumnTitle } from './styles'
+import { isHidden } from './utils/isHidden'
+import { Card } from './Card'
+import { AddNewItem } from './AddNewItem'
+import { useAppState } from './state/AppStateContext'
 import { useRef } from 'react'
 import { useItemDrag } from './utils/useItemDrag'
 import { useDrop } from 'react-dnd'
+import { moveList, addTask } from './state/action'
 import { throttle } from 'throttle-debounce-ts'
-import { isHidden } from './utils/isHidden'
 
 type ColumnProps = {
   text: string
@@ -19,7 +19,6 @@ export const Column = ({ text, id, isPreview }: ColumnProps) => {
   const { draggedItem, getTasksByListId, dispatch } = useAppState()
   const tasks = getTasksByListId(id)
   const ref = useRef<HTMLDivElement>(null)
-  const { drag } = useItemDrag({ type: 'COLUMN', id, text })
   const [, drop] = useDrop({
     accept: 'COLUMN',
     hover: throttle(200, () => {
@@ -30,10 +29,13 @@ export const Column = ({ text, id, isPreview }: ColumnProps) => {
         if (draggedItem.id === id) {
           return
         }
+
         dispatch(moveList(draggedItem.id, id))
       }
     }),
   })
+
+  const { drag } = useItemDrag({ type: 'COLUMN', id, text })
 
   drag(drop(ref))
 
@@ -45,10 +47,10 @@ export const Column = ({ text, id, isPreview }: ColumnProps) => {
     >
       <ColumnTitle>{text}</ColumnTitle>
       {tasks.map((task) => (
-        <Card text={task.text} key={task.id} id={task.id} />
+        <Card columnId={id} text={task.text} key={task.id} id={task.id} />
       ))}
       <AddNewItem
-        toggleButtonText="+ Add another card "
+        toggleButtonText="+ Add another card"
         onAdd={(text) => dispatch(addTask(text.toString(), id))}
         dark
       />
